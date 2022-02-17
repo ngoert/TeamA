@@ -9,21 +9,21 @@
 #define PORT 8081
 #define SA struct sockaddr
 
-void func(int sockfd)
+void func(int sockf)
 {
-    char buff[MAX];
-    int n;
+    char buffer[MAX];
+    int a;
     for (;;) {
-        bzero(buff, sizeof(buff));
-        printf("Enter the string : ");
-        n = 0;
-        while ((buff[n++] = getchar()) != '\n')
+        bzero(buffer, sizeof(buffer));
+        printf("Enter a string to talk to the server: ");
+        a = 0;
+        while ((buffer[a++] = getchar()) != '\n')
             ;
-        write(sockfd, buff, sizeof(buff));
-        bzero(buff, sizeof(buff));
-        read(sockfd, buff, sizeof(buff));
-        printf("From Server : %s", buff);
-        if ((strncmp(buff, "exit", 4)) == 0) {
+        write(sockf, buffer, sizeof(buffer));
+        bzero(buffer, sizeof(buffer));
+        read(sockf, buffer, sizeof(buffer));
+        printf("Output From Server : %s", buffer);
+        if ((strncmp(buffer, "exit", 4)) == 0) {
             printf("Client Exit...\n");
             break;
         }
@@ -32,17 +32,17 @@ void func(int sockfd)
    
 int main()
 {
-    int sockfd, connfd;
+    int sockf, connfd;
     struct sockaddr_in servaddr, cli;
    
     // socket create and verification
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
-        printf("socket creation failed...\n");
+    sockf = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockf == -1) {
+        printf("Failed to connect to socket...\n");
         exit(0);
     }
     else
-        printf("Socket successfully created..\n");
+        printf("Successfully created socket..\n");
     bzero(&servaddr, sizeof(servaddr));
    
     // assign IP, PORT
@@ -51,17 +51,17 @@ int main()
     servaddr.sin_port = htons(PORT);
    
     // connect the client socket to server socket
-    if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) {
-        printf("connection with the server failed...\n");
+    if (connect(sockf, (SA*)&servaddr, sizeof(servaddr)) != 0) {
+        printf("Failed to connect with server...\n");
         exit(0);
     }
     else
-        printf("connected to the server..\n");
+        printf("Successfully connected to server!\n");
    
-    // function for chat
-    func(sockfd);
+    // function for chat with server
+    func(sockf);
    
-    // close the socket
-    close(sockfd);
+    // function to close the socket
+    close(sockf);
 }
 	
