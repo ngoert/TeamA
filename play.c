@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int play(){
     char start;
     printf("Welcome to main!" 
@@ -7,10 +9,12 @@ int play(){
            "\nEnter:\n");  // RESTART MAIN
         scanf(" %c", &start);
         if(start == '1') {
-            singlePlayerMode();
+			//TODO
+            //singlePlayerMode();
         }
         else if (start == '2') {
-            multiPlayerMode();
+			//TODO
+            //multiPlayerMode();
         }
         
         else {

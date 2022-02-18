@@ -1,4 +1,4 @@
-//header file for Scoreboard
+//header file for Scoreboard.c
 
 #ifndef SCOREBOARD_H
 #define SCOREBOARD_H

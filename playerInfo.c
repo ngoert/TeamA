@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int getPlayerInfo() {
+int getPlayerInfo(void) {
     struct getPlayers {
 char firstName[40];
 char lastName[40];

@@ -7,6 +7,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include "Scoreboard.h"
+#include "play.h"
+#include "playerInfo.h"
 #define MAX 80
 #define PORT 8081
 #define SA struct sockaddr
@@ -46,7 +49,29 @@ int main()
 {
     int sockf, connf, len;
     struct sockaddr_in servaddr, cli;
-   
+	
+	// TEMPORARY FUCNTION CALLS FOR TESTING AND SHOWCASE
+	// START OF TEMPORARY FUNCTION CALLS
+	createScoreBoard(0);
+    createScoreBoard(1);
+    insertSinglePlayer("John", "Doe", "Russia", 10, 1, 2);
+    insertMultiPlayer("Billy", "Stan", "Vietnam", 12, "Win", 5, 11);
+    insertSinglePlayer("Jack", "Ball", "USA", 12, 4, 5);
+    insertSinglePlayer("Jill", "Lilly", "Egypt", 8, 2, 3);
+    insertMultiPlayer("Nicky", "Matt", "USA", 14, "Lose", 11, 21);
+    insertSinglePlayer("Diane", "Peter", "China", 11, 10, 12);
+    insertMultiPlayer("Alex", "Brax", "Russia", 15, "Win", 12, 12);
+    insertMultiPlayer("Ron", "Moore", "Egypt", 13, "Lose", 16, 15);
+    insertSinglePlayer("Kyle", "Ricky", "Japan", 9, 14, 17);
+    insertMultiPlayer("Cass", "Sam", "Mexico", 10, "Lose", 21, 51);
+    insertSinglePlayer("Rick", "Joe", "Canada", 1, 21, 31);
+    insertMultiPlayer("Randy", "Sally", "China", 1, "Win", 18, 16);
+    insertSinglePlayer("Bob", "Marley", "Mexico", 13, 41, 51);
+    insertMultiPlayer("Hanzo", "Carol", "Japan", 111, "Lose", 91, 71);
+	getPlayerInfo();
+	play();
+    // END OF TEMPORARY FUNCTION CALLS
+	
     // socket create and verification
     sockf = socket(AF_INET, SOCK_STREAM, 0);
     if (sockf == -1) {
