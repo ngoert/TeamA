@@ -1,4 +1,4 @@
-int main(void) {
+int getPlayerInfo() {
     struct getPlayers {
 char firstName[40];
 char lastName[40];
