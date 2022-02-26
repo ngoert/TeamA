@@ -74,9 +74,13 @@ int isValid(char* word, char* input){
         int val = isInDictionary(word);
         write(fd[1], &val, sizeof(val));
         close(fd[1]);
-        FILE* file = fopen(input, "a");
-        fwrite(word, sizeof(char), strlen(word), file);
-        fclose(file);
+        if (val){
+            FILE* file = fopen(input, "a");
+            fwrite("\n", sizeof(char), 1, file);
+            changeCase(word, 1);
+            fwrite(word, sizeof(char), strlen(word), file);
+            fclose(file);
+        }
         exit(EXIT_SUCCESS);
     }
 }
