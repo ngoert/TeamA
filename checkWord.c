@@ -89,9 +89,9 @@ char* getInput(){
     time_t t;
     srand((unsigned) time(&t));
     int number = rand()%10 + 1;
-    char* temp = malloc(9);
-    if (number < 10) sprintf(temp, "input_0%d", number);
-    else sprintf(temp, "input_%d", number);
+    char* temp = malloc(13);
+    if (number < 10) sprintf(temp, "input_0%d.txt", number);
+    else sprintf(temp, "input_%d.txt", number);
     return temp;
 }
 
