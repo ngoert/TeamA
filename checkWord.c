@@ -58,23 +58,41 @@ int isInInput(char* input, char* word){
 }
 
 int isValid(char* word, char* input){
-    if (isInInput(input, word)) return 1;
-    int fd[2];
-    pipe(fd);
-    if (fork()){
-        close(fd[1]);
-        int val;
-        read(fd[0], &val, sizeof(val));
-        close(fd[0]);
+    int inputPipe[2];
+    pipe(inputPipe);
+    int isFound;
+    
+    if(fork()){
+        close(inputPipe[1]);
+        read(inputPipe[0], &isFound, sizeof(isFound));
+        close(inputPipe[0]);
         wait(NULL);
-        if (val) return 2;
+    } else {
+        close(inputPipe[0]);
+        isFound = isInInput(input, word);
+        write(inputPipe[1], &isFound, sizeof(isFound));
+        close(inputPipe[1]);
+        exit(EXIT_SUCCESS);
+    }
+    
+    if (isFound) return 1;
+    
+    int dictPipe[2];
+    pipe(dictPipe);
+    
+    if (fork()){
+        close(dictPipe[1]);
+        read(dictPipe[0], &isFound, sizeof(isFound));
+        close(dictPipe[0]);
+        wait(NULL);
+        if (isFound) return 2;
         else return 0;
     } else {
-        close(fd[0]);
-        int val = isInDictionary(word);
-        write(fd[1], &val, sizeof(val));
-        close(fd[1]);
-        if (val){
+        close(dictPipe[0]);
+        isFound = isInDictionary(word);
+        write(dictPipe[1], &isFound, sizeof(isFound));
+        close(dictPipe[1]);
+        if (isFound){
             FILE* file = fopen(input, "a");
             fwrite("\n", sizeof(char), 1, file);
             changeCase(word, 1);

@@ -51,7 +51,7 @@ void func(int connf)
 int main()
 {
 	char * temp = malloc(256);
-    char* input = getInput();
+    char input[256] = "input_01.txt";
     char* scramble = getScramble(input);
 	printf("%s\n", input);
 	printf("Letters: %s\n", scramble);
