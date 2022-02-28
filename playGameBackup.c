@@ -49,26 +49,26 @@ int playGame(int connf)
         strcat(buffer, temp);
         write(connf, buffer, sizeof(buffer));
         strcpy(playerInput, "1");
-        //int fd[2];
+        int fd[2];
         time_t t = time(NULL);
-        //pipe(fd);
-        fcntl(connf, F_SETFL, O_NONBLOCK);
-        //pid_t pid = fork();
-        //if (pid){
-            //close(fd[1]);
-            while (time(NULL) - t < 30 && !strcmp(playerInput, "1")){
+        pipe(fd);
+        fcntl(fd[0], F_SETFL, O_NONBLOCK);
+        pid_t pid = fork();
+        if (pid){
+            close(fd[1]);
+            while (time(NULL) - t < 20 && !strcmp(playerInput, "1")){
                 read(fd[0], &playerInput, sizeof(playerInput));
             }
-            //close(fd[0]);
-            //kill(pid, SIGTERM);
-            //wait(NULL);
-        //} else {
-            //close(fd[0]);
-            //scanf("%s", playerInput);
-            //write(fd[1], &playerInput, sizeof(playerInput));
-            //close(fd[1]);
-            //exit(0);
-        //}
+            close(fd[0]);
+            kill(pid, SIGTERM);
+            wait(NULL);
+        } else {
+            close(fd[0]);
+            scanf("%s", playerInput);
+            write(fd[1], &playerInput, sizeof(playerInput));
+            close(fd[1]);
+            exit(0);
+        }
         if(!strcmp(playerInput, "1") || !strcmp(playerInput, "0")) {
             numPlayerPasses++;
             break;
