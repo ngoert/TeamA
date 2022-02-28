@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+/** swaps 2 strings */
+
 void swap(char* a, char* b){
     char tmp[64];
     strcpy(tmp, a);
@@ -9,28 +11,7 @@ void swap(char* a, char* b){
     strcpy(b, tmp);
 }
 
-char* removeWord(int i, char** words, int* n){
-    swap(words[i], words[*n-1]);
-    char* temp = words[*n-1];
-    *n = *n-1;
-    words = realloc(words, sizeof(char*)*(*n));
-    return temp;
-}
-
-void checkWords(char* word, char** words, int* n){
-    for (int i = 0; i < *n; i++){
-        if (!strcmp(word, words[i])){
-            free(removeWord(i, words, n));
-            break;
-        }
-    }
-}
-
-char* getWord(char** words, int* n){
-    
-    char* temp;
-    return temp;
-}
+/** gets possible words from input file */
 
 char** getWords(char* input, int* n){
     char word[256];

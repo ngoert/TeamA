@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include <ctype.h>
 
+/** changes case of string */
 
 void changeCase(char* word, int toCapital){
     for (int i = 0; word[i]; i++){
@@ -13,6 +14,8 @@ void changeCase(char* word, int toCapital){
         else word[i] = tolower(word[i]);
     }
 }
+
+/** checks if letters in sting are in scramble */
 
 int isPossible(char* word, char* scramble){
     changeCase(word, 1);
@@ -35,6 +38,8 @@ int isPossible(char* word, char* scramble){
     return 1;
 }
 
+/** gets scramble from input file */
+
 char* getScramble(char* input){
     FILE* file = fopen(input, "r");
     char* scramble = malloc(256);
@@ -42,6 +47,8 @@ char* getScramble(char* input){
     fclose(file);
     return scramble;
 }
+
+/** checks if string is in dictionary file */
 
 int isInDictionary(char* search){
     changeCase(search, 0);
@@ -62,12 +69,16 @@ int isInDictionary(char* search){
     return wordExist;
 }
 
+/** checks if a string is in an array */
+
 int inStringArray(char* word, char** wordList, int size){
     for (int i = 0; i < size; i++){
         if (!strcmp(word, wordList[i])) return 1;
     }
     return 0;
 }
+
+/** returns an array of all possible words from input file */
 
 char** getPossible(char* input, int* totalWords){
     char ** wordList = malloc(0);
@@ -88,6 +99,8 @@ char** getPossible(char* input, int* totalWords){
     return wordList;
 }
 
+/** checks if string is in input file */
+
 int isInInput(char* input, char* word){
     changeCase(word, 1);
     FILE* file = fopen(input, "r");
@@ -105,6 +118,8 @@ int isInInput(char* input, char* word){
     free(temp);
     return 0;
 }
+
+/** checks if a string is valid by checking if in input, then checking dictionary if not, then add to input if it is */
 
 int isValid(char* word, char* input){
     int inputPipe[2];
@@ -152,6 +167,8 @@ int isValid(char* word, char* input){
     }
 }
 
+/** gets a random input file */
+
 char* getInput(){
     time_t t;
     srand((unsigned) time(&t));
@@ -161,26 +178,6 @@ char* getInput(){
     else sprintf(temp, "input_%d.txt", number);
     return temp;
 }
-
-/*
-int main()
-{
-
-    time_t t;
-    srand((unsigned) time(&t));
-    int number = rand()%10 + 1;
-    char temp[9];
-    if (number < 10) sprintf(temp, "input_0%d", number);
-    else sprintf(temp, "input_%d", number);
-    printf("%s\n", temp);
-
-    char input[] = "input_01.txt";
-    char* scramble = getScramble(input);
-    if (checkInput(input, "VIA")) printf("yes");
-    else printf("no");
-    return 0;
-}
-*/
 
 /*
 EIAHVC
