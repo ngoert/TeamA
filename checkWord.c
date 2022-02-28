@@ -6,11 +6,33 @@
 #include <sys/wait.h>
 #include <ctype.h>
 
+
 void changeCase(char* word, int toCapital){
     for (int i = 0; word[i]; i++){
         if (toCapital) word[i] = toupper(word[i]);
         else word[i] = tolower(word[i]);
     }
+}
+
+int isPossible(char* word, char* scramble){
+    changeCase(word, 1);
+    int noMatch = 0;
+    int size = strlen(scramble);
+    for(int i = 0; i < strlen(word); i++){
+        noMatch = 1;
+        for (int j = 0; j < size; j++){
+            if (word[i] == scramble[j]){
+                noMatch = 0;
+                break;
+            }
+        }
+        if (noMatch) return 0;
+
+    }
+    return 1;
+    
+    
+    return 1;
 }
 
 char* getScramble(char* input){
@@ -40,6 +62,32 @@ int isInDictionary(char* search){
     return wordExist;
 }
 
+int inStringArray(char* word, char** wordList, int size){
+    for (int i = 0; i < size; i++){
+        if (!strcmp(word, wordList[i])) return 1;
+    }
+    return 0;
+}
+
+char** getPossible(char* input, int* totalWords){
+    char ** wordList = malloc(0);
+    *totalWords = 0;
+    FILE* file = fopen(input, "r");
+    char* temp = malloc(256);
+    fgets(temp, 256, file);
+    fgets(temp, 256, file);
+    fgets(temp, 256, file);
+    while(fscanf(file, "%s", temp) != EOF){
+        (*totalWords)++;
+        wordList = realloc(wordList, sizeof(char*)*(*totalWords));
+        wordList[*totalWords-1] = malloc(strlen(temp)+1);
+        strcpy(wordList[*totalWords-1], temp);
+    }
+    fclose(file);
+    free(temp);
+    return wordList;
+}
+
 int isInInput(char* input, char* word){
     changeCase(word, 1);
     FILE* file = fopen(input, "r");
@@ -54,6 +102,7 @@ int isInInput(char* input, char* word){
         } 
     }
     fclose(file);
+    free(temp);
     return 0;
 }
 
