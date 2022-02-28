@@ -1,5 +1,5 @@
 #include <time.h>
-#include <conio.h>
+//#include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,8 +9,13 @@ int Timer(int counter){
 		counter--;
 		sleep(1);
 	}	
+   return 1;
 }
 
+/*
 int main(){
-	Timer(10);
+	if(Timer(10) == 1){
+	   printf("Working\n");
+	}
 }
+*/

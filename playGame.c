@@ -14,7 +14,7 @@
 // Driver function
 int playGame(int connf)
 {
-    int points = 0;
+    //int points = 0;
     char buffer[1028];
 	char * temp = malloc(256);
     char input[256] = "input_01.txt";
@@ -31,11 +31,10 @@ int playGame(int connf)
     guessedWords[numGuessedWords-1] = malloc(sizeof(char)+1);
     strcpy(guessedWords[numGuessedWords-1], scramble);
     guessedWords[numGuessedWords-1][1] = '\0';
-    char temp[256];
-
+    //char temp[256];
 
     while(1){
-        strcpy(buffer, "Guessed words:\n")
+        strcpy(buffer, "Guessed words:\n");
         //printf("Guessed words:\n");
         for(int i = 0; i < numGuessedWords; i++){
             sprintf(temp, "%s\n", guessedWords[i]);
@@ -47,7 +46,9 @@ int playGame(int connf)
         
         sprintf(temp, "Letters: %s\n", scramble);
         strcat(buffer, temp);
+	printf("hello");
         write(connf, buffer, sizeof(buffer));
+        
         strcpy(playerInput, "1");
         //int fd[2];
         time_t t = time(NULL);
@@ -57,7 +58,7 @@ int playGame(int connf)
         //if (pid){
             //close(fd[1]);
             while (time(NULL) - t < 30 && !strcmp(playerInput, "1")){
-                read(fd[0], &playerInput, sizeof(playerInput));
+                read(connf, &playerInput, sizeof(playerInput));
             }
             //close(fd[0]);
             //kill(pid, SIGTERM);
@@ -108,4 +109,3 @@ int playGame(int connf)
     }
 	
 }
-

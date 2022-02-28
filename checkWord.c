@@ -181,7 +181,6 @@ char* getInput(){
 
 /*
 EIAHVC
-
 Possible Words:
 ACE
 EVE
