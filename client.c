@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#define MAX 80
+#define MAX 1028
 #define PORT 8081
 #define SA struct sockaddr
 
@@ -13,20 +13,20 @@ void func(int sockf)
 {
     char buffer[MAX];
     int a;
+	
+	bzero(buffer, sizeof(buffer));
+    read(sockf, buffer, sizeof(buffer));
+	printf("%s", buffer);
     for (;;) {
+		
         bzero(buffer, sizeof(buffer));
-        printf("Enter a string to talk to the server: ");
         a = 0;
         while ((buffer[a++] = getchar()) != '\n')
             ;
         write(sockf, buffer, sizeof(buffer));
-        bzero(buffer, sizeof(buffer));
+		bzero(buffer, sizeof(buffer));
         read(sockf, buffer, sizeof(buffer));
-        printf("Output From Server : %s", buffer);
-        if ((strncmp(buffer, "exit", 4)) == 0) {
-            printf("Client Exit...\n");
-            break;
-        }
+		printf("%s", buffer);
     }
 }
    

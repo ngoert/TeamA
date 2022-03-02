@@ -1,3 +1,8 @@
+// Robby Hallock
+// Group A
+// robert.hallock@okstate.edu
+// 3/2/2022
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,13 +10,24 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include "substring.h"
+
+
+/** swaps 2 strings */
+
+void swap(char* a, char* b){
+    char tmp[64];
+    strcpy(tmp, a);
+    strcpy(a, b);
+    strcpy(b, tmp);
+}
 
 /** changes case of string */
 
 void changeCase(char* word, int toCapital){
-    for (int i = 0; word[i]; i++){
-        if (toCapital) word[i] = toupper(word[i]);
-        else word[i] = tolower(word[i]);
+    for (int i = 0; word[i]; i++){ // Loops through each letter
+        if (toCapital) word[i] = toupper(word[i]); // Sets each character to upper case if toCapital is 1
+        else word[i] = tolower(word[i]); // // Sets each character to lower case if toCapital is 0
     }
 }
 
@@ -21,20 +37,20 @@ int isPossible(char* word, char* scramble){
     changeCase(word, 1);
     int noMatch = 0;
     int size = strlen(scramble);
-    for(int i = 0; i < strlen(word); i++){
+    for(int i = 0; i < strlen(word); i++){ // Loops through each letter of the word
         noMatch = 1;
-        for (int j = 0; j < size; j++){
+        for (int j = 0; j < size; j++){ // Loops through each letter of scramble
+			
+			// If match move on
+		
             if (word[i] == scramble[j]){
                 noMatch = 0;
                 break;
             }
         }
-        if (noMatch) return 0;
+        if (noMatch) return 0; // Return false if there is any letter thats not in scramble
 
     }
-    return 1;
-    
-    
     return 1;
 }
 
@@ -48,32 +64,14 @@ char* getScramble(char* input){
     return scramble;
 }
 
-/** checks if string is in dictionary file */
-
-int isInDictionary(char* search){
-    changeCase(search, 0);
-    FILE* filePointer;
-    int wordExist=0;
-    int bufferLength = 255;
-    char word[100];
-    char line[bufferLength];
-    filePointer = fopen("dictionary.txt", "r");
-    while(fscanf(filePointer, "%s", line) != EOF) {
-        if (!strcmp(line, search)) {
-            wordExist=1;
-            break;
-        }
-    }
-    fclose(filePointer);
-
-    return wordExist;
-}
-
 /** checks if a string is in an array */
 
 int inStringArray(char* word, char** wordList, int size){
+	
+	// Loops through string array
+	
     for (int i = 0; i < size; i++){
-        if (!strcmp(word, wordList[i])) return 1;
+        if (!strcmp(word, wordList[i])) return 1; // Return true if a matches is found
     }
     return 0;
 }
@@ -81,13 +79,19 @@ int inStringArray(char* word, char** wordList, int size){
 /** returns an array of all possible words from input file */
 
 char** getPossible(char* input, int* totalWords){
-    char ** wordList = malloc(0);
+    char ** wordList = malloc(0); // Array to return
     *totalWords = 0;
     FILE* file = fopen(input, "r");
     char* temp = malloc(256);
+	
+	// Clears first 3 lines
+	
     fgets(temp, 256, file);
     fgets(temp, 256, file);
     fgets(temp, 256, file);
+	
+	// Loops through each word and adds to array
+	
     while(fscanf(file, "%s", temp) != EOF){
         (*totalWords)++;
         wordList = realloc(wordList, sizeof(char*)*(*totalWords));
@@ -101,69 +105,97 @@ char** getPossible(char* input, int* totalWords){
 
 /** checks if string is in input file */
 
-int isInInput(char* input, char* word){
-    changeCase(word, 1);
+int isInInputFunction(char* input, char* word){
+	changeCase(word, 1);
     FILE* file = fopen(input, "r");
     char* temp = malloc(256);
+	
+	// Clear first 3 lines
+	
     fgets(temp, 256, file);
     fgets(temp, 256, file);
     fgets(temp, 256, file);
+	
+	// Scan each word
+	
     while(fscanf(file, "%s", temp) != EOF){
-        if (!strcmp(word, temp)) {
+        if (!strcmp(word, temp)) { // If match return true
             fclose(file);
             return 1;
         } 
     }
+	
+	// If no matches return false
+	
     fclose(file);
     free(temp);
     return 0;
 }
 
-/** checks if a string is valid by checking if in input, then checking dictionary if not, then add to input if it is */
 
-int isValid(char* word, char* input){
-    int inputPipe[2];
+/** creates forked process to check input file for word */
+
+int isInInput(char* input, char* word){
+	
+	// Make pipe
+	
+	int inputPipe[2];
     pipe(inputPipe);
+	
     int isFound;
     
-    if(fork()){
+	// Fork
+	
+    if(fork()){ // Parent
         close(inputPipe[1]);
-        read(inputPipe[0], &isFound, sizeof(isFound));
+        read(inputPipe[0], &isFound, sizeof(isFound)); // Read from pipe result child sends
         close(inputPipe[0]);
-        wait(NULL);
-    } else {
+        wait(NULL); // wait for child to finish
+		return isFound; // returns result
+    } else { // Child
         close(inputPipe[0]);
-        isFound = isInInput(input, word);
-        write(inputPipe[1], &isFound, sizeof(isFound));
+        isFound = isInInputFunction(input, word); // Executes function to check if word is in input file
+        write(inputPipe[1], &isFound, sizeof(isFound)); // Writes the word to pipe for parent
         close(inputPipe[1]);
-        exit(EXIT_SUCCESS);
+        exit(EXIT_SUCCESS); // Exits
     }
-    
-    if (isFound) return 1;
-    
+}
+
+/** creates forked process to find word in dictionary */
+
+int isInDictionary(char* word, char* input){
+	
+    int isFound;
+	
+	// Creates pipe
+	
     int dictPipe[2];
     pipe(dictPipe);
+	
+	// Fork
     
-    if (fork()){
+    if (fork()){ // Parent
         close(dictPipe[1]);
-        read(dictPipe[0], &isFound, sizeof(isFound));
+        read(dictPipe[0], &isFound, sizeof(isFound)); // Read result from child
         close(dictPipe[0]);
-        wait(NULL);
-        if (isFound) return 2;
-        else return 0;
-    } else {
+        wait(NULL); // Waits for child to finish
+        return isFound; // Returns the result
+    } else { // Child
         close(dictPipe[0]);
-        isFound = isInDictionary(word);
-        write(dictPipe[1], &isFound, sizeof(isFound));
-        close(dictPipe[1]);
-        if (isFound){
-            FILE* file = fopen(input, "a");
-            fwrite("\n", sizeof(char), 1, file);
+        isFound = isInDictionaryFunction(word); // Performs function to find word in dictionary
+		
+		// Adds word to input file if in dictionary
+		
+		if (isFound){
+			FILE* file = fopen(input, "a");
+			fwrite("\n", sizeof(char), 1, file);
             changeCase(word, 1);
             fwrite(word, sizeof(char), strlen(word), file);
-            fclose(file);
-        }
-        exit(EXIT_SUCCESS);
+			fclose(file);
+		}
+        write(dictPipe[1], &isFound, sizeof(isFound)); // Write result to pipe for parent
+        close(dictPipe[1]);
+        exit(EXIT_SUCCESS); // Exit
     }
 }
 
@@ -179,22 +211,3 @@ char* getInput(){
     return temp;
 }
 
-/*
-EIAHVC
-Possible Words:
-ACE
-EVE
-ICE
-VIA
-CHI
-VIE
-VAC
-CAVE
-EACH
-HAVE
-ACHE
-HIVE
-CHIVE
-HEAVE
-ACHIEVE
-*/

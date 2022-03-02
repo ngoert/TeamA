@@ -1,3 +1,8 @@
+// Robby Hallock
+// Group A
+// robert.hallock@okstate.edu
+// 3/2/2022
+
 #include <stdio.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -7,7 +12,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include "Scoreboard.h"
 #include "playGame.h"
 #define MAX 1028
 #define PORT 8081
@@ -43,37 +47,39 @@ void func(int connf)
    
         // and send that buffer to client
         write(connf, buffer, sizeof(buffer));
-        read(connf, buffer, sizeof(buffer));
-        
+        read(connf, buffer, sizeof(buffer));        
         if(buffer[0] == '1'){
-		strcpy(buffer, "Single-Player Mode\n"
-		"Player info enter first name: \n");
-		write(connf, buffer, sizeof(buffer));
+			strcpy(buffer, "Single-Player Mode\n"
+			"Player info enter first name: \n");
+			write(connf, buffer, sizeof(buffer));
 		
-		 read(connf, buffer, sizeof(buffer));
-		 strcpy(firstName, buffer);
-		 strcat(playerInfo, "First Name: ");
-		 strcat(playerInfo, firstName);
-		 strcpy(buffer, "Enter last name: \n");
-		 write(connf, buffer, sizeof(buffer));
+			read(connf, buffer, sizeof(buffer));
+			strcpy(firstName, buffer);
+			strcat(playerInfo, "First Name: ");
+			strcat(playerInfo, firstName);
+			strcpy(buffer, "Enter last name: \n");
+			write(connf, buffer, sizeof(buffer));
+			
+			read(connf, buffer, sizeof(buffer));
+			strcpy(lastName, buffer);
+			strcat(playerInfo, "Last Name: ");
+			strcat(playerInfo, lastName);
+			strcpy(buffer, "Enter country: \n");
+			write(connf, buffer, sizeof(buffer));
 		 
-		 read(connf, buffer, sizeof(buffer));
-		 strcpy(lastName, buffer);
-		 strcat(playerInfo, "Last Name: ");
-		 strcat(playerInfo, lastName);
-		 strcpy(buffer, "Enter country: \n");
-		 write(connf, buffer, sizeof(buffer));
+			read(connf, buffer, sizeof(buffer));
+			strcpy(country, buffer);
+			strcat(playerInfo, "Country: ");
+			strcat(playerInfo, country);
 		 
-		 read(connf, buffer, sizeof(buffer));
-		 strcpy(country, buffer);
-		 strcat(playerInfo, "Country: ");
-		 strcat(playerInfo, country);
-		 
-		strcat(playerInfo, "\n");
-		strcpy(buffer, playerInfo);
+			strcat(playerInfo, "\n");
+			strcpy(buffer, playerInfo);
 		
-		playGame(connf);
+			firstName[strlen(firstName)-1] = '\0';
+			lastName[strlen(lastName)-1] = '\0';
+			country[strlen(country)-1] = '\0';
 		
+			playGame(connf, firstName, lastName, country);
         }
         else if (buffer[0] == '2'){
         	strcpy(buffer, "Multi-Player Mode");
@@ -100,7 +106,7 @@ int main()
 {
     int sockf, connf, len;
     struct sockaddr_in servaddr, cli;
-	
+	/*
 	// TEMPORARY FUCNTION CALLS FOR TESTING AND SHOWCASE
 	// START OF TEMPORARY FUNCTION CALLS
 	createScoreBoard(0);
@@ -121,6 +127,7 @@ int main()
     insertMultiPlayer("Hanzo", "Carol", "Japan", 111, "Lose", 91, 71);
 	//play();
     // END OF TEMPORARY FUNCTION CALLS
+	*/
 	
     // socket create and verification
     sockf = socket(AF_INET, SOCK_STREAM, 0);

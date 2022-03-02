@@ -1,4 +1,9 @@
-//header file for Scoreboard.c
+// Robby Hallock
+// Group A
+// robert.hallock@okstate.edu
+// 3/2/2022
+
+// scoreBoard.c header file
 
 #ifndef SCOREBOARD_H
 #define SCOREBOARD_H

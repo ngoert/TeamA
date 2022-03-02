@@ -19,3 +19,22 @@ int substring(char* word, char* word2)
 
     return 0;
 }
+
+int isInDictionaryFunction(char* search){
+    changeCase(search, 0);
+    FILE* filePointer;
+    int wordExist=0;
+    int bufferLength = 255;
+    char word[100];
+    char line[bufferLength];
+    filePointer = fopen("dictionary.txt", "r");
+    while(fscanf(filePointer, "%s", line) != EOF) {
+        if (!strcmp(line, search)) {
+            wordExist=1;
+            break;
+        }
+    }
+    fclose(filePointer);
+
+    return wordExist;
+}

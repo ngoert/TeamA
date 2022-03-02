@@ -1,3 +1,5 @@
+// ai.c header file
+
 #ifndef AI_H
 #define AI_H
 char** getWords(char* input, int* n);
