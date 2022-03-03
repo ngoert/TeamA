@@ -26,3 +26,16 @@ If there are already 5 players, then the player to be inserted doesn’t get ins
 
 When you input an integer into Timer(),
 it will countdown from that number and represent them as seconds within the function until it ends when the number reaches zero.
+
+
+compile server:
+gcc -o server scoreBoard.c playGame.c substring.c checkWord.c serverTCP.c serverFunc.
+
+Compile Client:
+gcc -o client clientTCP.c
+
+Run server frist:
+./server
+
+Run Clients second:
+./client

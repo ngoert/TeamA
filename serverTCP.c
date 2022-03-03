@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "serverFunc.h"
+
 
 #define PORT 4444
 
@@ -35,22 +37,23 @@ int main(){
 	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	ret = bind(sockf, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
+	printf("Trying to bind to port \n");
 	if(ret < 0){
 		printf("Binding error...\n");
 		exit(1);
 	}
-	printf("Trying to bind to port \n");
-
+	
 	if(listen(sockf, 10) == 0){
 		printf("Listening...\n");
 	}else{
-		printf("Unsuccessful in binding...\n");
+		printf("Listen Error\n");
 	}
 
 
 	while(1){
 		newSock = accept(sockf, (struct sockaddr*)&newAddr, &addr_size);
 		if(newSock < 0){
+			printf("Unsuccessful in accepting...\n");
 			exit(1);
 		}
 		printf("Successfully accepted connection from... %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port));
@@ -58,18 +61,21 @@ int main(){
 		if((childpid = fork()) == 0){
 			close(sockf);
 
-			while(1){
-				int size = recv(newSock, buff, 1024, 0);
-				buff[size] = '\0';
-				if(strcmp(buff, ":exit") == 0){
-					printf("Successfully Disconnected from... %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port));
-					break;
-				}else{
-					//printf("Client: %s\n", buff);
+			//while(1){
+				func(newSock);
+				exit(0);
+				//int size = recv(newSock, buff, 1024, 0);
+				//buff[size] = '\0';
+				//if(strcmp(buff, ":exit") == 0){
+					//printf("Successfully Disconnected from... %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port));
+					//break;
+				//}else{
+					//strcpy(buff, "test\n");
+					//printf("%s\n", buff);
 					//send(newSock, buff, strlen(buff), 0);
 					//bzero(buff, sizeof(buff));
-				}
-			}
+				//}
+			//}
 		}
 
 	}

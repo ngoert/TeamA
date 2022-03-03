@@ -36,20 +36,20 @@ int main(){
 
 	while(1){
 		//printf("Client says: \t");
-		scanf("%s", &buff[0]);
-		send(clientSock, buff, strlen(buff), 0);
+		if(recv(clientSock, buff, 1024, 0) < 0){
+			printf("Could not receive data due to error\n");
+		}else{
+			printf("%s\n", buff);
+		}
+		fgets(&buff[0], sizeof(buff), stdin);
+		send(clientSock, buff, strlen(buff)+1, 0);
 
-		if(strcmp(buff, ":exit") == 0){
+		if(strcmp(buff, "3\n") == 0){
 			close(clientSock);
 			printf("Successfully disconnected from server!\n");
 			exit(1);
 		}
 
-		if(recv(clientSock, buff, 1024, 0) < 0){
-			printf("Could not receive data due to error\n");
-		}else{
-			//printf("Server says: \t%s\n", buff);
-		}
 	}
 
 	return 0;

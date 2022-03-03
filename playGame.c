@@ -30,6 +30,7 @@ char* getRandomLetter(char* scramble){
 
 int playGame(int connf, char* first, char* last, char* country)
 {
+	
 	// Variables
 	
 	time_t t;
@@ -49,7 +50,7 @@ int playGame(int connf, char* first, char* last, char* country)
     numPlayerPasses = 0;
     points = 0;
 	cpuPoints = 0;
-    char buffer[1028];
+    char buffer[1024];
 	char* temp = malloc(256);
     char* input = malloc(256);
 	input = getInput();
@@ -103,7 +104,7 @@ int playGame(int connf, char* first, char* last, char* country)
 				// Set current time and connf to nonblocking
 				
 				t = time(NULL);
-				fcntl(connf, F_SETFL, O_NONBLOCK);
+				//fcntl(connf, F_SETFL, O_NONBLOCK);
 
 				// Gives player 4 minutes to make input
 				
@@ -113,7 +114,7 @@ int playGame(int connf, char* first, char* last, char* country)
 				
 				// Re-enable blocking
 				
-				fcntl(connf, F_SETFL, fcntl(connf, F_GETFL) & ~O_NONBLOCK);
+				//fcntl(connf, F_SETFL, fcntl(connf, F_GETFL) & ~O_NONBLOCK);
 
 				playerInput[strlen(playerInput) -1] = '\0'; // fix input
 				

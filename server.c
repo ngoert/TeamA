@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include "playGame.h"
+#include "serverFunc.h"
 #define MAX 1028
 #define PORT 8081
 #define SA struct sockaddr
@@ -23,6 +24,7 @@
    char playerInfo[120];
    
 // Function designed for chat between client and server.
+/*
 void func(int connf)
 {
     char buffer[MAX];
@@ -100,6 +102,7 @@ void func(int connf)
         }
     }
 }
+*/
    
 // Driver function
 int main()
