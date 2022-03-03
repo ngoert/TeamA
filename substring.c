@@ -12,7 +12,7 @@ int substring(char* word, char* word2)
     changeCase(word, 1);
     changeCase(word2, 1);
     int matches = 0;
-    for (int i = strlen(word2); i > -1; i--){  // loop backwards over word2 len
+    for (int i = strlen(word2)-1; i > -1; i--){  // loop backwards over word2 len
         if (word2[i] == word[0]){              // if substrings match, match equals true
             matches = 1;
             for (int j = i; j < strlen(word2); j++){    // loop over previous substrings
