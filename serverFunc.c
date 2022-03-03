@@ -18,9 +18,11 @@
 #define SA struct sockaddr
 
 /*
-After the server connects to the client the server sends them this menu that ask if they want to play in single-player, multiplayer, or to just quit the game. Also saves all the player's information just in case.
+After the server connects to the client the server sends them this menu that ask if they want to play in single-player, multiplayer, or to just quit the game.
+Also saves all the player's information just in case.
 */
 
+//func takes the accepted data packet and communicates with the client
 void func(int connf)
 {
 	int a;
