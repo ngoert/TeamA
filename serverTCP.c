@@ -1,3 +1,9 @@
+/* Author: Virginia Crews
+	Contributor: Robby Hallock
+   Group A
+   email: virginia.crews@okstate.edu
+   3/2/2022 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +25,7 @@
 #define DICTINNAME "/mq_DictionaryIn_queue"
 #define SCOREINNAME "/mq_ScoreboardIn_queue"
 
-#define PORT 4444
+#define PORT 4444 //port to connect client and server
 
 int main(){
 	
@@ -182,7 +188,7 @@ int main(){
 		exit(0);
 	}
 	
-	int sockf, ret;
+	int sockf, ret; //defining sock, struct and variables
 	 struct sockaddr_in serverAddr;
 
 	int newSock;
@@ -190,29 +196,29 @@ int main(){
 
 	socklen_t addr_size;
 
-	char buff[1024];
-	pid_t childpid;
+	char buff[1024]; 
+	pid_t childpid; //define child process to use fork() method 
 
 	sockf = socket(AF_INET, SOCK_STREAM, 0);
-	if(sockf < 0){
+	if(sockf < 0){ //checks to see if socket was created if not prints error message
 		printf("Connection error...\n");
 		exit(1);
 	}
-	printf("Successfully created Server Socket!\n");
+	printf("Successfully created Server Socket!\n"); //else succesfully creates socket
 
 	memset(&serverAddr, '\0', sizeof(serverAddr));
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(PORT);
-	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); //local address since on local machine
 
-	ret = bind(sockf, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
-	printf("Trying to bind to port \n");
+	ret = bind(sockf, (struct sockaddr*)&serverAddr, sizeof(serverAddr)); //creates bind method instead of connect since server will be on specific port only
+	printf("Trying to bind to port \n"); //checking if binding successful 
 	if(ret < 0){
-		printf("Binding error...\n");
+		printf("Binding error...\n"); //if unsuccesful could mean it needs to be put on a different port
 		exit(1);
 	}
 	
-	if(listen(sockf, 10) == 0){
+	if(listen(sockf, 10) == 0){ //listening method to listen for client
 		printf("Listening...\n");
 	}else{
 		printf("Listen Error\n");
@@ -220,22 +226,22 @@ int main(){
 
 
 	while(1){
-		newSock = accept(sockf, (struct sockaddr*)&newAddr, &addr_size);
+		newSock = accept(sockf, (struct sockaddr*)&newAddr, &addr_size); //accept method to accept new client 
 		if(newSock < 0){
-			printf("Unsuccessful in accepting...\n");
+			printf("Unsuccessful in accepting...\n"); //
 			exit(1);
 		}
-		printf("Successfully accepted connection from... %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port));
+		printf("Successfully accepted connection from... %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port)); //accepts client and prints specific client address
 
-		if((childpid = fork()) == 0){
+		if((childpid = fork()) == 0){ //uses fork() method to allow for multiple clients to join server
 			close(sockf);
-			func(newSock);
+			func(newSock); //calls newSock func to accept new clients
 			exit(0);
 		}
 
 	}
 
-	close(newSock);
+	close(newSock); //closes socket 
 
 
 	return 0; 
