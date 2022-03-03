@@ -12,7 +12,9 @@
 #define LAST 9 
 #define COUNTRY 7
 
-/** Creates Scoreboard if one doesn't exist */
+/** Creates Scoreboard if one doesn't exist 
+	isMultiplayer = boolean for determining if its multiplayer
+*/
 
 void createScoreBoard(int isMultiPlayer){
     FILE * file;
@@ -44,7 +46,14 @@ void createScoreBoard(int isMultiPlayer){
     fclose(file);
 }
 
-/** writes entry into singlePlayer.txt */
+/** writes entry into singlePlayer.txt 
+	first = firstname
+	last = lastname
+	country = country
+	score = points
+	words = words found
+	added = valid words not in the input file
+*/
 
 void appendSinglePlayer(char* first, char* last, char* country, int score, int words, int added){
     FILE * file = fopen("singlePlayer.txt", "a");
@@ -65,7 +74,14 @@ void appendSinglePlayer(char* first, char* last, char* country, int score, int w
     fclose(file);
 }
 
-/** writes entry into multiPlayer.txt */
+/** writes entry into multiPlayer.txt 
+	first = firstname
+	last = lastname
+	country = country
+	score = points
+	result = string of win or lose
+	words = words found
+	added = valid words not in the input file*/
 
 void appendMultiPlayer(char* first, char* last, char* country, int score, char* result, int words, int added){
     FILE * file = fopen("multiPlayer.txt", "a");
@@ -86,7 +102,14 @@ void appendMultiPlayer(char* first, char* last, char* country, int score, char* 
     fclose(file);
 }
 
-/** Insert player into appropriate slot in singlePlayer*/
+/** Insert player into appropriate slot in singlePlayer
+	first = firstname
+	last = lastname
+	country = country
+	score = points
+	words = words found
+	added = valid words not in the input file
+*/
 
 void insertSinglePlayer(char* first, char* last, char* country, int score, int words, int added){
     FILE * file = fopen("singlePlayer.txt", "r");
@@ -161,7 +184,13 @@ void insertSinglePlayer(char* first, char* last, char* country, int score, int w
     for (int j = 0; j < i+isNotFull; j++) appendSinglePlayer(tempFirst[j], tempLast[j], tempCountry[j],tempScore[j],tempWords[j],tempAdded[j]);
 }
 
-/** Insert player into appropriate slot in multiPlayer*/
+/** Insert player into appropriate slot in multiPlayer
+	first = firstname
+	last = lastname
+	country = country
+	score = points
+	words = words found
+	added = valid words not in the input file*/
 
 void insertMultiPlayer(char* first, char* last, char* country, int score, char* result, int words, int added){
     FILE * file = fopen("multiPlayer.txt", "r");

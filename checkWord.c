@@ -13,7 +13,10 @@
 #include "substring.h"
 
 
-/** swaps 2 strings */
+/** swaps 2 strings 
+	a = string 1
+	b = string 2
+*/
 
 void swap(char* a, char* b){
     char tmp[64];
@@ -22,7 +25,10 @@ void swap(char* a, char* b){
     strcpy(b, tmp);
 }
 
-/** changes case of string */
+/** changes case of string 
+	word = word to change case of
+	toCaptial = 0 for lowercase, 1 for upper case
+*/
 
 void changeCase(char* word, int toCapital){
     for (int i = 0; word[i]; i++){ // Loops through each letter
@@ -31,7 +37,11 @@ void changeCase(char* word, int toCapital){
     }
 }
 
-/** checks if letters in sting are in scramble */
+/** checks if letters in sting are in scramble 
+	word = word to check
+	scramble = scrambled letters
+	returns boolean 1 = true, 0 = false
+*/
 
 int isPossible(char* word, char* scramble){
     changeCase(word, 1);
@@ -54,7 +64,10 @@ int isPossible(char* word, char* scramble){
     return 1;
 }
 
-/** gets scramble from input file */
+/** gets scramble from input file 
+	input = input file string
+	returns scrambled letter string from input file
+*/
 
 char* getScramble(char* input){
     FILE* file = fopen(input, "r");
@@ -64,7 +77,11 @@ char* getScramble(char* input){
     return scramble;
 }
 
-/** checks if a string is in an array */
+/** checks if a string is in an array
+	word = string to check
+	wordlist = string array to check if word is in
+	size = size of string array
+*/
 
 int inStringArray(char* word, char** wordList, int size){
 	
@@ -76,7 +93,11 @@ int inStringArray(char* word, char** wordList, int size){
     return 0;
 }
 
-/** returns an array of all possible words from input file */
+/** returns an array of all possible words from input file 
+	input = input file string
+	totalWords = total number of words in return array
+	returns array of possible words from input file
+*/
 
 char** getPossible(char* input, int* totalWords){
     char ** wordList = malloc(0); // Array to return
@@ -103,7 +124,11 @@ char** getPossible(char* input, int* totalWords){
     return wordList;
 }
 
-/** checks if string is in input file */
+/** checks if string is in input file 
+	input = input file string
+	word = word to check
+	returns boolean 1 = true, 0 = false
+*/
 
 int isInInputFunction(char* input, char* word){
 	changeCase(word, 1);
@@ -133,7 +158,11 @@ int isInInputFunction(char* input, char* word){
 }
 
 
-/** creates forked process to check input file for word */
+/** creates forked process to check input file for word 
+	input = input file string
+	word = word to check
+	returns boolean 1 = true, 0 = false
+*/
 
 int isInInput(char* input, char* word){
 	
@@ -161,7 +190,11 @@ int isInInput(char* input, char* word){
     }
 }
 
-/** creates forked process to find word in dictionary */
+/** creates forked process to find word in dictionary 
+	word = word to check
+	input = input file string
+	returns boolean 1 = true, 0 = false
+*/
 
 int isInDictionary(char* word, char* input){
 	
@@ -199,7 +232,9 @@ int isInDictionary(char* word, char* input){
     }
 }
 
-/** gets a random input file */
+/** gets a random input file 
+	returns input file string
+*/
 
 char* getInput(){
     time_t t;
