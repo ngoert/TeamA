@@ -11,11 +11,24 @@
 #include <time.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <mqueue.h>
+#include <sys/stat.h>
+
+#define INPUTOUTNAME "/mq_InputOut_queue"
+#define DICTOUTNAME "/mq_DictionaryOut_queue"
+#define INPUTINNAME "/mq_InputIn_queue"
+#define DICTINNAME "/mq_DictionaryIn_queue"
+#define SCOREINNAME "/mq_ScoreboardIn_queue"
+
+
 #include "checkWord.h"
 #include "substring.h"
 #include "scoreBoard.h"
 
-/** Returns a random letter from the input scramble */
+/** Returns a random letter from the input scramble 
+	scramble = scramble to find letter of
+	return letter
+*/
 
 char* getRandomLetter(char* scramble){
 	time_t t;
@@ -26,10 +39,68 @@ char* getRandomLetter(char* scramble){
 	return letter;
 }
    
-/** Function to play game with AI where connf is the connection to client and the rest of the input is user details */
+/** Function to play game with AI where connection is the connection to client and the rest of the input is user details 
+	connection = connection to client
+	first = first name
+	last = last name
+	country = country
+*/
 
-int playGame(int connf, char* first, char* last, char* country)
+int playGame(int connection, char* first, char* last, char* country)
 {
+	
+	// Input struct
+	
+	typedef struct {
+		char input[256];
+		char word[256];
+	} InputMessage;
+		
+	// Score struct
+		
+	typedef struct {
+		int isMultiPlayer;
+		char first[256];
+		char last[256];
+		char country[256];
+		int score;
+		int words;
+		int added;
+		char result[256];
+	} InputScores;
+		
+	// Output struct
+		
+	typedef struct {
+		int valid;
+	} OutputMessage;
+		
+		// Input struct attributes
+		
+		struct mq_attr inAttr = {
+			.mq_flags = 0,
+			.mq_maxmsg = 3,
+			.mq_curmsgs = 0,
+			.mq_msgsize = sizeof(InputMessage)
+		};
+		
+		// Output struct attributes
+		
+		struct mq_attr outAttr = {
+			.mq_flags = 0,
+			.mq_maxmsg = 3,
+			.mq_curmsgs = 0,
+			.mq_msgsize = sizeof(OutputMessage)
+		};
+		
+		// Score struct attributes
+		
+		struct mq_attr scoreAttr = {
+			.mq_flags = 0,
+			.mq_maxmsg = 3,
+			.mq_curmsgs = 0,
+			.mq_msgsize = sizeof(InputScores)
+		};
 	
 	// Variables
 	
@@ -99,22 +170,18 @@ int playGame(int connf, char* first, char* last, char* country)
 				strcpy(playerInput, "");
 				sprintf(temp, "Letters: %s\t\tPoints: %d\t\tOpponent's Points: %d\n", scramble, points, cpuPoints);
 				strcat(buffer, temp);
-				write(connf, buffer, sizeof(buffer));
+				write(connection, buffer, sizeof(buffer));
 				
-				// Set current time and connf to nonblocking
+				// Set current time and connection to nonblocking
 				
 				t = time(NULL);
-				//fcntl(connf, F_SETFL, O_NONBLOCK);
 
 				// Gives player 4 minutes to make input
 				
 				while (time(NULL) - t < 4*60 && !strcmp(playerInput, "")){
-					read(connf, &playerInput, sizeof(playerInput));
+					read(connection, &playerInput, sizeof(playerInput));
 				}
 				
-				// Re-enable blocking
-				
-				//fcntl(connf, F_SETFL, fcntl(connf, F_GETFL) & ~O_NONBLOCK);
 
 				playerInput[strlen(playerInput) -1] = '\0'; // fix input
 				
@@ -144,12 +211,39 @@ int playGame(int connf, char* first, char* last, char* country)
 						
 						// Checks if English word
 						
-						if (isInInput(input, playerInput)){ // Checks input file
+						// Sends to check input file process
+						
+						mqd_t inputInQueue = mq_open(INPUTINNAME, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR ,&inAttr);
+						InputMessage inputMsgStruct;
+						strcpy(inputMsgStruct.input, input);
+						strcpy(inputMsgStruct.word, playerInput);
+						mq_send(inputInQueue, (char *)&inputMsgStruct, sizeof(inputMsgStruct), 0);
+						
+						// Gets results from process
+						
+						mqd_t inputOutQueue = mq_open(INPUTOUTNAME, O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR, &outAttr);
+						OutputMessage outputMsgStruct;
+						mq_receive(inputOutQueue, (char *)&outputMsgStruct, sizeof(outputMsgStruct), NULL);
+											
+						if (outputMsgStruct.valid){ // Checks result of being in input file
 							valid = 1;
-						} else if (isInDictionary(playerInput, input)){ // Checks dictionary
-							valid = 1;
-							points += 5; // 5 bonus points
-							added++; // increase words added to dictionary
+						} else { // If not check in dictionary
+							
+							// Send word and input file to dictioanry
+							
+							mqd_t dictInQueue = mq_open(DICTINNAME, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR ,&inAttr);
+							mq_send(dictInQueue, (char *)&inputMsgStruct, sizeof(inputMsgStruct), 0);
+							
+							// Get results
+							
+							mqd_t dictOutQueue = mq_open(DICTOUTNAME, O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR, &outAttr);
+							mq_receive(dictOutQueue, (char *)&outputMsgStruct, sizeof(outputMsgStruct), NULL);
+							
+							if (outputMsgStruct.valid){ // If in dictionary
+								valid = 1;
+								points += 5; // 5 bonus points
+								added++; // increase words added to dictionary
+							}
 						}
 						
 						// Calculates points
@@ -250,7 +344,22 @@ int playGame(int connf, char* first, char* last, char* country)
 	// Writes score to scoreboard if the player wins
 	
 	if (points > cpuPoints){
-		createScoreBoard(0);
-		insertSinglePlayer(first, last, country, points, words, added);
+		
+		// Sets values in struct
+		
+		mqd_t inQueue = mq_open(SCOREINNAME, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR, &scoreAttr);
+		InputScores scores;
+		strcpy(scores.result, "Win");
+		strcpy(scores.first, first);
+		strcpy(scores.last, last);
+		strcpy(scores.country, country);
+		scores.score = points;
+		scores.words = words;
+		scores.added = added;
+		scores.isMultiPlayer = 0;
+		
+		// Sends struct to process
+		
+		mq_send(inQueue, (char *)&scores, sizeof(scores), 0);
 	}
 }
