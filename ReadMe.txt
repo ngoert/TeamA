@@ -1,3 +1,15 @@
+compile server:
+gcc -o server scoreBoard.c playGame.c substring.c checkWord.c serverTCP.c serverFunc.c -lrt
+
+Compile Client:
+gcc -o client clientTCP.c
+
+Run server frist:
+./server
+
+Run Clients second:
+./client
+
 The server/client works by first compiling and running the server file.
 The user should use the command gcc server.c and press enter.
 Then enter ./a.out and these two commands should allow the server to begin to search for connection to the port.
@@ -26,16 +38,3 @@ If there are already 5 players, then the player to be inserted doesn’t get ins
 
 When you input an integer into Timer(),
 it will countdown from that number and represent them as seconds within the function until it ends when the number reaches zero.
-
-
-compile server:
-gcc -o server scoreBoard.c playGame.c substring.c checkWord.c serverTCP.c serverFunc.
-
-Compile Client:
-gcc -o client clientTCP.c
-
-Run server frist:
-./server
-
-Run Clients second:
-./client
